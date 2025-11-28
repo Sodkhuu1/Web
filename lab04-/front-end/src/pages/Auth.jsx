@@ -7,6 +7,7 @@ export default function Auth() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [image, setImage] = useState("");
   const [error, setError] = useState(null);
 
   const { login, signup } = useAuth();
@@ -91,6 +92,14 @@ export default function Auth() {
           required
           minLength={4}
         />
+        {mode === "signup" && (
+          <input 
+            type="url"
+            placeholder="Зурагны URL"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+          />
+        )}
 
         <button type="submit">
           {mode === "login" ? "Нэвтрэх" : "Бүртгүүлэх"}

@@ -58,7 +58,13 @@ app.post("/api/users/signup", async (req, res) => {
 app.get("/api/users", async (req, res) => {
   try {
     const users = await User.find({}, "name email image");
-    res.json({ users });
+    const safeUsers = users.map(u => ({
+      id: u._id.toString(),
+      name: u.name,
+      email: u.email,
+      image: u.image || null,
+    }));
+    res.json({ users: safeUsers });
   } catch (err) {
     console.error("Get users error:", err);
     res.status(500).json({ error: "Серверийн алдаа." });
