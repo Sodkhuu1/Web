@@ -76,5 +76,15 @@
     "latitude": "100",
     "longtitude": "104",
     "creator": "1764318101816"
+  },
+  {
+    "id": "1764338481437",
+    "title": "Бэлхийн гол",
+    "description": "Бэлхийн хөндийд орших, тогтуун урсгалтай цэнгэг гол.",
+    "image": "https://fastly.picsum.photos/id/11/2500/1667.jpg?hmac=xxjFJtAPgshYkysU_aqx2sZir-kIOjNR9vx0te7GycQ",
+    "address": "Бэлх",
+    "latitude": "80",
+    "longtitude": "100",
+    "creator": "1764318101816"
   }
 ]
