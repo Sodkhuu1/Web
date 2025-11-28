@@ -1,0 +1,5 @@
+front-end кодыг ажлуулахдаа front-end гэсэн хавтасруу ороод 
+npm run dev -ийг бичиж ажлуулна
+
+back-end кодыг ажлуулахдаа back-end/src гэсэн хавтасруу ороод
+nodemon index.js -ийг бичиж ажлуулна
