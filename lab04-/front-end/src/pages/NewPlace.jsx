@@ -21,11 +21,15 @@ export default function NewPlace() {
       return;
     }
     try {
+      if (!user) {
+        alert("Та эхлээд нэвтэрсэн байх ёстой.");
+        return;
+      }
       const body = {
         ...form,
-        creator: user.id,
+        creator: user.userId,
       };
-      const res = await fetch("http://localhost:3000/api/places", {
+      const res = await fetch("http://localhost:5000/api/places", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +48,7 @@ export default function NewPlace() {
       title: "", description: "", image: "", address: "", latitude: "", longtitude: "",
     });
     alert("Амжилттай сервер дээр хадгалагдлаа!");
-    navigate('/${user.id}/places', { replace: true});
+    navigate(`/${user.userId}/places`, { replace: true});
   } catch (error) {
     console.error(error);
     alert("Сервертэй холбогдох үед алдаа гарлаа.");

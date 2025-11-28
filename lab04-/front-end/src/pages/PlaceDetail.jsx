@@ -1,42 +1,133 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { places as seed } from "../data/dummyData.js";
 import { onImageError } from "../utils/imgFallback.js";
 
-function getPlaces() {
-  const ls = JSON.parse(localStorage.getItem("places") || "[]");
-  return [...seed, ...ls];
-}
+const API_BASE = "http://localhost:5000";
 
 export default function PlaceDetail() {
   const { pid } = useParams();
   const navigate = useNavigate();
-  const list = getPlaces();
-  const place = list.find((p) => String(p.id) === String(pid));
 
-  if (!place) return <p>Газрын мэдээлэл олдсонгүй.</p>;
+  const [place, setPlace] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleDelete = () => {
-    const fromLS = JSON.parse(localStorage.getItem("places") || "[]");
-    const updated = fromLS.filter(p => String(p.id) !== String(pid));
-    localStorage.setItem("places", JSON.stringify(updated));
-    alert("Устгалаа (LocalStorage дахь таны нэмсэн зүйлсээс).");
-    navigate(-1);
+  // Газрын мэдээллийг backend-ээс авах
+  useEffect(() => {
+    async function fetchPlace() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(`${API_BASE}/api/places/${pid}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Газрын мэдээлэл авах үед алдаа гарлаа.");
+        }
+
+        setPlace(data);
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (pid) {
+      fetchPlace();
+    }
+  }, [pid]);
+
+  // Устгах
+  const handleDelete = async () => {
+    if (!window.confirm("Энэ газрыг устгах уу?")) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/places/${pid}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.error || "Устгах үед алдаа гарлаа.");
+      }
+
+      alert(data.message || "Амжилттай устлаа.");
+      // creator байвал тэр хэрэглэгчийн газрууд руу буцна, үгүй бол зүгээр history -1
+      if (place && place.creator) {
+        navigate(`/${place.creator}/places`, { replace: true });
+      } else {
+        navigate(-1);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="container">
+        <p className="muted">Ачаалж байна...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container">
+        <p className="muted" style={{ color: "red" }}>
+          Алдаа: {error}
+        </p>
+      </div>
+    );
+  }
+
+  if (!place) {
+    return (
+      <div className="container">
+        <p>Газрын мэдээлэл олдсонгүй.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
-      <img className="detail-image" src={place.image} alt={place.title} onError={onImageError} referrerPolicy="no-referrer" />
+      <img
+        className="detail-image"
+        src={place.image}
+        alt={place.title}
+        onError={onImageError}
+        referrerPolicy="no-referrer"
+      />
       <h2 className="page-title">{place.title}</h2>
       <p>{place.description}</p>
-      <p><b>Хаяг:</b> {place.address}</p>
-      {(place.latitude || place.longitude) && (
-        <p><b>Координат:</b> {place.latitude} , {place.longitude}</p>
+      <p>
+        <b>Хаяг:</b> {place.address}
+      </p>
+
+      {(place.latitude || place.longtitude) && (
+        <p>
+          <b>Координат:</b> {place.latitude} , {place.longtitude}
+        </p>
       )}
+
       <div className="detail-actions">
-        <button className="btn" onClick={()=>navigate(-1)}>Буцах</button>
-        <button className="btn btn-danger" onClick={handleDelete}>Устгах</button>
-        <button className="btn btn-secondary" onClick={()=>navigate(`/places/${pid}/edit`)}>Засах</button>
+        <button className="btn" onClick={() => navigate(-1)}>
+          Буцах
+        </button>
+        <button className="btn btn-danger" onClick={handleDelete}>
+          Устгах
+        </button>
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate(`/places/${pid}/edit`)}
+        >
+          Засах
+        </button>
       </div>
     </div>
   );

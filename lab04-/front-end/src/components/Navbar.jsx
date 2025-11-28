@@ -10,7 +10,7 @@ export default function Navbar() {
         <Link to="/" style={{fontWeight: 800}}>Газрын Сан</Link>
         <Link to="/places">Бүх газар</Link>
         {!user && <Link to="/authenticate">Нэвтрэх</Link>}
-        {user && <Link to={`/${user.id}/places`}>Миний газрууд</Link>}
+        {user && <Link to={`/${user.userId}/places`}>Миний газрууд</Link>}
         {user && <Link to="/places/new">Газар нэмэх</Link>}
         <div className="nav-spacer">
           {user ? (
