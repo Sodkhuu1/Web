@@ -47,7 +47,7 @@ export default function Home() {
       )}
 
       {!loading && !error && users.length === 0 && (
-        <p className="muted">Одоогоор бүртгэгдсэн хэрэглэгч алга.</p>
+        <p className="muted">Одоогоор бүртгэгдсэн хэрэглэгч алга байна.</p>
       )}
 
       <div className="grid">

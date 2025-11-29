@@ -31,7 +31,7 @@ export default function Auth() {
       setError(err.message);
     }
   };
-
+  //comment 
   return (
     <div style={{ maxWidth: 400, margin: "32px auto" }}>
       <h2>{mode === "login" ? "Нэвтрэх" : "Бүртгүүлэх"}</h2>
