@@ -3,5 +3,3 @@ npm run dev -ийг бичиж ажлуулна
 
 back-end кодыг ажлуулахдаа back-end/src гэсэн хавтасруу ороод
 nodemon index.js -ийг бичиж ажлуулна
-
-commit hiihiin tuld uurchlult hiiv

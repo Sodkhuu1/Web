@@ -22,7 +22,7 @@ export default function Auth() {
       if (mode === "login") {
         await login(email, password);
       } else {
-        await signup(name, email, password);
+        await signup(name, email, password, image);
       }
 
       const to = location.state?.from?.pathname || "/";

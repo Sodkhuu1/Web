@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     const res = await fetch(`${API_BASE}/api/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -57,11 +58,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   // SIGNUP -> backend /api/users/signup
-  const signup = async (name, email, password) => {
+  const signup = async (name, email, password, image) => {
     const res = await fetch(`${API_BASE}/api/users/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      credentials: "include",
+      body: JSON.stringify({ name, email, password, image }),
     });
 
     const data = await res.json();
@@ -75,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       name: data.name,
       email: data.email,
     };
-
+    
     setUser(newUser);
     return newUser;
   };

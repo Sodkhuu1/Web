@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const { body, validationResult } = require("express-validator");
 const connectDB = require("./db");
 const User = require("./models/User");
 const Place = require("./models/Place");
@@ -9,8 +11,18 @@ const app = express();
 const PORT = 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 app.use(express.json());
+app.use(cookieParser());
+app.use(session({
+  secret: "your_secret_key",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 1000*60*60 },
+}));
 
 // MongoDB холболт
 connectDB();
@@ -18,14 +30,18 @@ connectDB();
 /* ========== USERS ========== */
 
 // Signup
-app.post("/api/users/signup", async (req, res) => {
-  const { name, email, password, image } = req.body;
-
-  if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({ error: "Нэр, имэйл, нууц үг заавал." });
+app.post("/api/users/signup", 
+  [
+    body("name").notEmpty().withMessage("Нэр заавал."),
+    body("email").isEmail().withMessage("Зөв имэйл оруулна уу."),
+    body("password").isLength({ min: 4 }).withMessage("Нууц үг дор хаяж 4 тэмдэгттэй байх ёстой."),
+  ],
+  async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
   }
+  const { name, email, password, image } = req.body;
 
   try {
     const existing = await User.findOne({ email });
@@ -41,6 +57,8 @@ app.post("/api/users/signup", async (req, res) => {
       password,
       image: image || null,
     });
+
+    req.session.userId = user._id.toString();
 
     res.status(201).json({
       message: "Хэрэглэгч амжилттай бүртгэгдлээ.",
@@ -72,8 +90,17 @@ app.get("/api/users", async (req, res) => {
 });
 
 // Login
-app.post("/api/users/login", async (req, res) => {
-  const { email, password } = req.body;
+app.post("/api/users/login",
+  [
+    body("email").isEmail().withMessage("И-мэйл буруу."),
+    body("password").notEmpty().withMessage("Нууц үг заавал."),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
@@ -83,6 +110,8 @@ app.post("/api/users/login", async (req, res) => {
         .status(401)
         .json({ error: "Имэйл эсвэл нууц үг буруу." });
     }
+
+    req.session.userId = user._id.toString();
 
     res.json({
       message: "Амжилттай нэвтэрлээ.",
@@ -96,6 +125,23 @@ app.post("/api/users/login", async (req, res) => {
   }
 });
 
+app.post("/api/users/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: "Серверийн алдаа." });
+    }
+    res.clearCookie("connect.sid");
+    res.json({ message: "Амжилттай гарлаа." });
+  });
+});
+
+
+function checkAuth(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(403).json({ error: "Энэ үйлдэлд нэвтэрсэн байх ёстой." });
+  }
+  next();
+}
 
 // Шинэ газар үүсгэх
 app.post("/api/places", async (req, res) => {
