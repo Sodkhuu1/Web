@@ -2,23 +2,34 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "web system ba technology hicheeliin lab4 t hiisen gazriin zurag nemdeg web iin backend.",
-  "keywords": ["lab5"],
+  "keywords": [
+    "lab5"
+  ],
   "homepage": "https://github.com/Sodkhuu1/Web_lab5#readme",
-  "bugs": { "url": "https://github.com/Sodkhuu1/Web_lab5/issues" },
-  "repository": { "type": "git", "url": "git+https://github.com/Sodkhuu1/Web_lab5.git" },
+  "bugs": {
+    "url": "https://github.com/Sodkhuu1/Web_lab5/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sodkhuu1/Web_lab5.git"
+  },
   "license": "ISC",
   "author": "Sodkhuu",
   "type": "commonjs",
   "main": "index.js",
-  "engines": { "node": ">=20.19.0" },
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "echo \"No tests\""
   },
   "dependencies": {
+    "connect-mongo": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "express-session": "^1.18.2",
     "mongoose": "^9.0.0"
   },
   "devDependencies": {
